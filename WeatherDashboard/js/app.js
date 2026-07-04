@@ -1,129 +1,114 @@
-const weather = {
+import { loadConfig } from "./config.js";
 
-    city: "Hyderabad",
+import { getWeather } from "./weatherService.js";
 
-    temperature: "34°C",
-
-    description: "Sunny",
-
-    humidity: "65%",
-
-    wind: "10 km/h",
-
-    pressure: "1008 hPa",
-
-    icon: "https://openweathermap.org/img/wn/01d@2x.png"
-
-};
-
-
-function displayWeather(weather) {
-
-    cityName.textContent = weather.city;
-
-    temperature.textContent = weather.temperature;
-
-    description.textContent = weather.description;
-
-    humidity.textContent = weather.humidity;
-
-    wind.textContent = weather.wind;
-
-    pressure.textContent = weather.pressure;
-
-    weatherIcon.src = weather.icon;
-
+import {
+    showLoader,
+    hideLoader,
+    showError,
+    hideError
 }
+from "./ui.js";
 
-displayWeather(weather);
+import { displayWeather }
+from "./dom.js";
 
-function showError(message) {
 
-    errorMessage.textContent = message;
-
-    errorMessage.classList.remove("hidden");
-
-}
-
-showError("Please enter city");
-
-function hideError() {
-
-    errorMessage.classList.add("hidden");
-
-}
-
-temperature.style.color = "red";
-temperature.style.fontSize = "60px";
-description.style.fontWeight = "bold";
-
-const loader = document.querySelector("#loader");
-
-function showLoader() {
-
-    loader.classList.remove("hidden");
-
-}
-function hideLoader() {
-
-    loader.classList.add("hidden");
-
-}
+const API_KEY = await loadConfig();
 
 const cityInput = document.querySelector("#cityInput");
 const searchButton = document.querySelector("#searchBtn");
 
-function validateInput(city) {
+const cityName = document.querySelector("#cityName");
+const temperature = document.querySelector("#temperature");
+const description = document.querySelector("#description");
+const humidity = document.querySelector("#humidity");
+const wind = document.querySelector("#wind");
+const pressure = document.querySelector("#pressure");
+const weatherIcon = document.querySelector("#weatherIcon");
 
-    if (city === "") {
+const loader = document.querySelector("#loader");
+const errorMessage = document.querySelector("#errorMessage");
 
-        showError("Please enter city name");
+const elements = {
 
-        return false;
+    cityName,
+
+    temperature,
+
+    description,
+
+    humidity,
+
+    wind,
+
+    pressure,
+
+    weatherIcon
+
+};
+
+async function searchWeather() {
+
+    const city = cityInput.value.trim();
+
+    if (!city) {
+
+        showError(errorMessage, "Please enter city.");
+
+        return;
 
     }
 
-    hideError();
+    hideError(errorMessage);
 
-    return true;
+    showLoader(loader);
 
-}
+    try {
 
-function searchWeather() {
+        const data =
+            await getWeather(city, API_KEY);
 
-    let city = cityInput.value.trim();
+        const weather = {
 
-    if (!validateInput(city))
-        return;
+            city: data.name,
 
-    const weather = {
+            temperature: `${Math.round(data.main.temp)}°C`,
 
-        city: city,
+            description: data.weather[0].description,
 
-        temperature: "34°C",
+            humidity: `${data.main.humidity}%`,
 
-        description: "Sunny",
+            wind: `${data.wind.speed} m/s`,
 
-        humidity: "65%",
+            pressure: `${data.main.pressure} hPa`,
 
-        wind: "10 km/h",
+            icon:
+            `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
 
-        pressure: "1008 hPa",
+        };
 
-        icon:
-        "https://openweathermap.org/img/wn/01d@2x.png"
+        displayWeather(weather, elements);
 
-    };
+    }
+    catch (error) {
 
-    displayWeather(weather);
+        showError(errorMessage, error.message);
+
+    }
+    finally {
+
+        hideLoader(loader);
+
+    }
 
 }
 
 searchButton.addEventListener("click", searchWeather);
 
-cityInput.addEventListener("keydown", function(event){
+cityInput.addEventListener("keydown", (event) => {
 
-    if(event.key === "Enter"){
+    if (event.key === "Enter") {
 
         searchWeather();
 
