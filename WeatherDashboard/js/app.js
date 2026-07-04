@@ -1,36 +1,57 @@
-const cityName = document.querySelector("#cityName");
+const weather = {
 
-const temperature = document.querySelector("#temperature");
+    city: "Hyderabad",
 
-const description = document.querySelector("#description");
+    temperature: "34°C",
 
-const humidity = document.querySelector("#humidity");
+    description: "Sunny",
 
-const wind = document.querySelector("#wind");
+    humidity: "65%",
 
-const pressure = document.querySelector("#pressure");
+    wind: "10 km/h",
 
-const weatherIcon = document.querySelector("#weatherIcon");
+    pressure: "1008 hPa",
 
-function displayWeather() {
+    icon: "https://openweathermap.org/img/wn/01d@2x.png"
 
-    cityName.textContent = "Hyderabad";
+};
 
-    temperature.textContent = "34°C";
 
-    description.textContent = "Sunny";
+function displayWeather(weather) {
 
-    humidity.textContent = "65%";
+    cityName.textContent = weather.city;
 
-    wind.textContent = "12 km/h";
+    temperature.textContent = weather.temperature;
 
-    pressure.textContent = "1008 hPa";
+    description.textContent = weather.description;
 
-    weatherIcon.src =
-        "https://openweathermap.org/img/wn/10d@2x.png";
+    humidity.textContent = weather.humidity;
+
+    wind.textContent = weather.wind;
+
+    pressure.textContent = weather.pressure;
+
+    weatherIcon.src = weather.icon;
+
 }
 
-displayWeather();
+displayWeather(weather);
+
+function showError(message) {
+
+    errorMessage.textContent = message;
+
+    errorMessage.classList.remove("hidden");
+
+}
+
+showError("Please enter city");
+
+function hideError() {
+
+    errorMessage.classList.add("hidden");
+
+}
 
 temperature.style.color = "red";
 temperature.style.fontSize = "60px";
@@ -38,58 +59,63 @@ description.style.fontWeight = "bold";
 
 const loader = document.querySelector("#loader");
 
-loader.classList.remove("hidden");
-loader.classList.add("hidden");
+function showLoader() {
+
+    loader.classList.remove("hidden");
+
+}
+function hideLoader() {
+
+    loader.classList.add("hidden");
+
+}
 
 const cityInput = document.querySelector("#cityInput");
 const searchButton = document.querySelector("#searchBtn");
 
-searchButton.addEventListener("click", function () {
-
-    console.log("Search button clicked");
-    console.log(cityInput.value);
-
-});
-
-/*let city = cityInput.value.trim();
-
-searchButton.addEventListener("click", function () {
+function validateInput(city) {
 
     if (city === "") {
 
-        alert("Please enter city name");
+        showError("Please enter city name");
 
-        return;
-    }
-
-    cityName.textContent = cityInput.value;
-
-});
-
-cityInput.addEventListener("keydown", function (event) {
-
-    if (event.key === "Enter") {
-
-        cityName.textContent = cityInput.value;
+        return false;
 
     }
 
-}); */ 
+    hideError();
 
-// much cleaner code below
+    return true;
 
-function searchWeather(){
+}
+
+function searchWeather() {
 
     let city = cityInput.value.trim();
 
-    if(city === ""){
-
-        alert("Please enter city");
-
+    if (!validateInput(city))
         return;
-    }
 
-    cityName.textContent = city;
+    const weather = {
+
+        city: city,
+
+        temperature: "34°C",
+
+        description: "Sunny",
+
+        humidity: "65%",
+
+        wind: "10 km/h",
+
+        pressure: "1008 hPa",
+
+        icon:
+        "https://openweathermap.org/img/wn/01d@2x.png"
+
+    };
+
+    displayWeather(weather);
 
 }
 
